@@ -27,7 +27,7 @@
             <div class="card">
               <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                  <img class="card-img-top" :src="this.photo" style="width:18rem" />
+                  <img class="card-img-top" :src="this.photo" />
                 </li>
                 <li class="list-group-item">
                   <p>Username: {{ this.name }}</p>
@@ -169,5 +169,9 @@ strong {
   font-size: 12px;
   font-weight: 900;
   color: gray;
+}
+
+img .card-img-top{
+  width: 100%;
 }
 </style>
