@@ -9,9 +9,9 @@
         <p class="lead">
           Digite um nome para encontrar usuários e repositórios
         </p>
-        <input v-model="username" class="form-control" placeholder="Digite o nome de um usuário..." required
+        <input v-model="username" @keypress.enter="setUserGit(username)" class="form-control" placeholder="Digite o nome de um usuário..." required autofocus
         />
-        <button @click="getUserGit" type="button" class="btn btn-dark">Buscar</button>
+        <button @click="setUserGit(username)" type="button" class="btn btn-dark">Buscar</button>
       </div>
     </div>
     <!-- CARD - PROFILE -->
@@ -65,14 +65,15 @@
 </template>
 
 <script>
-// import função
-import { getUser, getRepos } from "@/services";
 // import do Navbar
 import Navbar from "@/components/Navbar";
 // import do spinner de loading
 import Loading from "@/components/Loading";
 // import da tratativa de erro
 import Erro from "@/components/Erro";
+// Vuex
+import { mapActions, mapGetters } from 'vuex'
+
 
 // constante para trabalhar com a data de criação do repositório
 // eslint-disable-next-line no-unused-vars
@@ -91,7 +92,7 @@ export default {
       url: "",
       starred: "",
       repos: [],
-      loading: false,
+      loading: false, 
       error: false,
       moment: moment,
     };
@@ -101,30 +102,53 @@ export default {
     Loading,
     Erro,
   },
-  methods: {
-    getUserGit() {
-      // Buscar dados do usuário
-      this.loading = true;
-      getUser(this.username).then((res) => {
-        this.getUserData(res.data);
-        console.log(res.data.html_url);
-      }).catch(e => {
-        console.log(e)
-        this.getUserReset();
-      })
-      // Buscar repositórios do usuário
-      getRepos(this.username).then((res) => {
-        this.getReposData(res.data);
-      }).catch(e => {
-        console.log(e)
-        this.getResetRepos();
-      })
-      .finally(() => { this.loading = false; });
-      this.username = '';
-      this.error = false;
+  computed: {
+    ...mapGetters(['getterUserData' ,'getterReposData', 'getterLoadingFinish', 'getterError'])
+  },
+  watch: {
+    getterUserData() {
+      this.getUserData(this.getterUserData)
+      // console.log(this.getterUserData)
     },
+    getterReposData() {
+      this.getReposData(this.getterReposData)
+      // console.log(this.getterReposData)
+    },
+    getterLoadingFinish() {
+      this.getLoadingFinish(this.getterLoadingFinish)
+      // console.log(this.getterLoadingFinish)
+    },
+    getterError() {
+      this.getError(this.getterError)
+      // console.log(this.getterError)
+    }
+  },
+  methods: {
+    ...mapActions(['setUserGit']),
     // limpar dados após o loading
-    getUserReset() {
+    getUserData(data) {
+      this.username = '',
+      this.name = data.name;
+      this.location = data.location;
+      this.photo = data.avatar_url;
+      this.followers = data.followers;
+      this.following = data.following;
+      this.url = data.html_url;
+      this.repos = data.repos_url;
+      this.loading = true;
+      this.error = false;
+      // console.log('dados do usuário')
+    },
+    getReposData(data) {
+      this.repos = data;
+      this.error = false;
+      // console.log('repositórios')
+    },
+    getLoadingFinish() {
+      this.loading = false;
+    },
+    getError() {
+      this.username = '';
       this.name = '';
       this.location = '';
       this.photo = '';
@@ -134,22 +158,6 @@ export default {
       this.repos = '';
       this.error = true;
     },
-    getUserData(data) {
-      this.name = data.name;
-      this.location = data.location;
-      this.photo = data.avatar_url;
-      this.followers = data.followers;
-      this.following = data.following;
-      this.url = data.html_url;
-      this.repos = data.repos_url;
-    },
-    getReposData(data) {
-      this.repos = data;
-    },
-    getResetRepos() {
-      this.repos = [];
-      this.error = true;
-    }
   },
 };
 </script>
