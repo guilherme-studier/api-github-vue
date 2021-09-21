@@ -128,13 +128,13 @@ export default {
     // limpar dados após o loading
     getUserData(data) {
       this.username = '',
-      this.name = data.name;
-      this.location = data.location;
-      this.photo = data.avatar_url;
-      this.followers = data.followers;
-      this.following = data.following;
-      this.url = data.html_url;
-      this.repos = data.repos_url;
+      this.name = data.name || data.login;
+      this.location = data.location || '';
+      this.photo = data.avatar_url || '';
+      this.followers = data.followers || '';
+      this.following = data.following || '';
+      this.url = data.html_url || '';
+      this.repos = data.repos_url || '';
       this.loading = true;
       this.error = false;
       // console.log('dados do usuário')
